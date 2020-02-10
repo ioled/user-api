@@ -9,14 +9,14 @@ const {users} = require('../services/mongoDB');
  */
 exports.currentUser = async (req, res) => {
   console.log('[User-API][currentUser][Request]', req.params, req.body);
+  const {user} = req.body;
+  const googleID = user;
 
   // If user is not authenticated, return null.
-  if (!req.body) {
+  if (!googleID) {
     console.log('[User-API][currentUser][Error]', {error: 'User not logged in'});
     res.status(500).json({error: 'User not logged in'});
   } else {
-    const {googleID} = req.body;
-
     try {
       // Search in the DB for the user.
       const existingUser = await users.findOne({googleID});
