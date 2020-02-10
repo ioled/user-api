@@ -1,0 +1,17 @@
+{
+  "name": "ioled-user-api",
+  "version": "1.0.0",
+  "description": "user API",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "author": "C. Valdivia",
+  "license": "ISC",
+  "dependencies": {
+    "bson": "^4.0.3",
+    "express": "^4.17.1",
+    "lodash": "^4.17.15",
+    "mongoose": "^5.7.5"
+  }
+}
