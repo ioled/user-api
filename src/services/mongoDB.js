@@ -20,7 +20,7 @@ const deviceSchema = mongoose.Schema({
   alias: String,
 });
 
-const devices = mongoose.model('devices', deviceSchema);
+const Devices = mongoose.model('devices', deviceSchema);
 
 // User Schema
 const userSchema = mongoose.Schema({
@@ -37,5 +37,5 @@ const users = mongoose.model('users', userSchema);
 
 module.exports = {
   users,
-  devices,
+  Devices,
 };
