@@ -23,7 +23,7 @@ exports.currentUser = async (req, res) => {
       const userInfo = _.pick(existingUser, ['name', 'lastName', 'email', 'photo']);
 
       console.log('[User-API][currentUser][Response]', userInfo);
-      res.status(200).send({data: userInfo});
+      res.status(200).send({currentUser: userInfo});
     } catch (error) {
       console.log('[User-API][currentUser][Error]', error);
       res.status(500).json(error);
@@ -58,7 +58,7 @@ exports.getDevices = async (req, res) => {
       );
 
       console.log('[User-API][getDevices][Response]', devices);
-      res.status(200).send({data: devices});
+      res.status(200).send({userDevices: devices});
     } catch (error) {
       console.log('[User-API][getDevices][Error]', error);
       res.status(500).json(error);
