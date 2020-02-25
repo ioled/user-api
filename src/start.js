@@ -9,5 +9,5 @@ if (PORT === undefined) {
 
 // Start the app in the given port.
 userApi.listen(PORT, () => {
-  console.log('Listening on port', PORT);
+  console.log('[User API] Listening on port', PORT);
 });
