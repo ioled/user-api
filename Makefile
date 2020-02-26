@@ -26,6 +26,10 @@ deploy d:
 	@echo "[Cloud Function Deployment] Deploying Function"
 	@gcloud functions deploy userApi --set-env-vars MONGO_URI=$(MONGO_URI) --runtime nodejs8 --trigger-http --entry-point userApi
 
+deploy-test dt:
+	@echo "[TESTING] [Cloud Function Deployment] Deploying Function"
+	@gcloud functions deploy TestuserApi --set-env-vars MONGO_URI=$(MONGO_URI) --runtime nodejs8 --trigger-http --entry-point userApi
+
 run r:
 	@echo "[Running] Running service"
 	@PORT=$(PORT) MONGO_URI="$(MONGO_URI)" node src/start.js
