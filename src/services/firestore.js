@@ -1,5 +1,6 @@
 const Firestore = require('@google-cloud/firestore');
 const {PROJECT_ID} = require('../config/env');
+const {capitalize} = require('../utils/capitalize');
 
 const db = new Firestore({
   projectId: PROJECT_ID,
@@ -78,8 +79,15 @@ exports.getAllDevicesWithUserInfo = async () => {
       const device = data[index];
       const userId = device.user;
       if (userId !== '') {
-        const doc = await usersRef.doc(userId).get();
-        const userInfo = doc.data();
+        const doc = await usersRef.where('googleID', '==', userId).get();
+        if (doc.empty) {
+          console.log('[User-API][Firestore][getAllDevicesWithUserInfo] No user found');
+          return null;
+        }
+        let userInfo;
+        doc.forEach((doc) => {
+          userInfo = doc.data();
+        });
         device.user = {
           name: capitalize(`${userInfo.name} ${userInfo.lastName}`),
           email: userInfo.email,
@@ -97,24 +105,30 @@ exports.getAllDevicesWithUserInfo = async () => {
 
 exports.getUserByDevice = async (id) => {
   try {
-    const snapshot = await devicesRef.doc(id).get();
-    const device = snapshot.data();
+    const snapshot = await devicesRef.where('deviceID', '==', id).get();
+    if (snapshot.empty) {
+      console.log('[User-API][Firestore][getUserByDevice] Device not found');
+      return null;
+    }
+    let device;
+    snapshot.forEach((doc) => {
+      device = doc.data();
+    });
     const userId = device.user;
     const doc = await usersRef.where('googleID', '==', userId).get();
     if (doc.empty) {
       console.log('[User-API][Firestore][getUserByDevice] No user found');
       return null;
-    } else {
-      let user;
-      doc.forEach((doc) => {
-        user = doc.data();
-      });
-      return {
-        name: capitalize(`${user.name} ${user.lastName}`),
-        email: user.email,
-        photo: user.photo,
-      };
     }
+    let user;
+    doc.forEach((doc) => {
+      user = doc.data();
+    });
+    return {
+      name: capitalize(`${user.name} ${user.lastName}`),
+      email: user.email,
+      photo: user.photo,
+    };
   } catch (error) {
     throw new Error(error);
   }

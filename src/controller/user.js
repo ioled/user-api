@@ -55,10 +55,8 @@ exports.getDevices = async (req, res) => {
     res.status(500).json({error: 'User not logged in'});
   } else {
     try {
-      // Search in the DB for the user.
-      const {userId} = await getUser(googleID);
       // Search in the DB for the devices.
-      const devices = await getDevices(userId);
+      const devices = await getDevices(googleID);
 
       console.log('[User-API][getDevices][Response]', devices);
       res.status(200).send({userDevices: devices});
@@ -165,13 +163,13 @@ exports.getAllDevices = async (req, res) => {
 
 exports.getUserByDevice = async (req, res) => {
   const {id} = req.params;
-  console.log('[Device Control API][getUserByDevice (' + id + ')][Request] ', req.params);
+  console.log('[User-API][getUserByDevice (' + id + ')][Request] ', req.params);
   try {
     const user = await getUserByDevice(id);
-    console.log('[Device Control API][getUserByDevice (' + id + ')][Response] ', user);
+    console.log('[User-API][getUserByDevice (' + id + ')][Response] ', user);
     res.status(200).json({data: user});
   } catch (error) {
-    console.log('[Device Control API][getUserByDevice (' + id + ')][Error] ', error);
+    console.log('[User-API][getUserByDevice (' + id + ')][Error] ', error);
     return res.status(500).json({error});
   }
 };
