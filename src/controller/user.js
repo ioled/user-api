@@ -1,8 +1,13 @@
 const _ = require('lodash');
 
-const {users, Devices} = require('../services/mongoDB');
-
-const {addDevice, setUserToDevice, getUser, getDevices} = require('../services/firestore');
+const {
+  addDevice,
+  setUserToDevice,
+  getUser,
+  getDevices,
+  getAllDevicesWithUserInfo,
+  getUserByDevice,
+} = require('../services/firestore');
 
 /**
  * Returns the current authenticated user.
@@ -67,19 +72,20 @@ exports.getDevices = async (req, res) => {
 /**
  * Save a new device in the firestore database
  * @description Save new device in the database
- * @param {{body: {duty: number, state: boolean, timerOn: string, timerOff: string, timerState: boolean, deviceID: string}}} req Request.
+ * @param {{body: {userID: string, deviceID: string}}} req Request.
  * @param {object} res Response.
  */
 exports.saveDevice = async (req, res) => {
   console.log('[User-API][saveDevice][Request]', req.params, req.body);
-  const {duty, state, timerOn, timerOff, timerState, deviceID} = req.body;
+  const {userID, deviceID} = req.body;
 
   const device = {
-    duty,
-    state,
-    timerOn,
-    timerOff,
-    timerState,
+    duty: 1,
+    state: true,
+    timerOn: '10:00',
+    timerOff: '22:00',
+    timerState: false,
+    userID, // Google ID
     deviceID,
   };
 
@@ -110,5 +116,62 @@ exports.linkUserToDevice = async (req, res) => {
   } catch (error) {
     console.log('[User-API][linkUserToDevice][Error]', error);
     res.status(500).json(error);
+  }
+};
+
+/**
+ * List all the devices
+ * @description List the devices registered in IoT Core registry: ioled-devices.
+ * @returns {object} HTTP status code - 200, 500.
+ * @example Response example:
+ * {
+ *  "devices": [
+ *   {
+ *    "device": "esp32_...",
+ *    "user":
+ *      {"fullName": "...", "email": "...", "profilePic": "..."}
+ *   },
+ *   ...
+ *  ]
+ * }
+ */
+exports.getAllDevices = async (req, res) => {
+  console.log('[User-API][getAllDevices][Request]');
+  try {
+    const devices = await getAllDevicesWithUserInfo();
+
+    console.log('[User-API][getAllDevices][Response] ', devices);
+    res.status(200).json({data: devices});
+  } catch (error) {
+    console.log('[User-API][getAllDevices][Error] ', error);
+    res.status(500).json({error});
+  }
+};
+
+/**
+ * Get the user related to the device
+ * @description Controller that returns a JSON object with the user information of the device user
+ * @param {String} id - ID of the device listed in IoT Core
+ * @returns {object} HTTP status code - 200, 500.
+ * @example Response example:
+ * {
+ *  "user": {
+ *    "fullName": "John Doe",
+ *    "email": "johndoe@gmail.com",
+ *    "profilePic": "..."
+ *  }
+ * }
+ */
+
+exports.getUserByDevice = async (req, res) => {
+  const {id} = req.params;
+  console.log('[Device Control API][getUserByDevice (' + id + ')][Request] ', req.params);
+  try {
+    const user = await getUserByDevice(id);
+    console.log('[Device Control API][getUserByDevice (' + id + ')][Response] ', user);
+    res.status(200).json({data: user});
+  } catch (error) {
+    console.log('[Device Control API][getUserByDevice (' + id + ')][Error] ', error);
+    return res.status(500).json({error});
   }
 };

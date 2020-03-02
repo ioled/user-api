@@ -66,3 +66,56 @@ exports.getDevices = async (userID) => {
     return null;
   }
 };
+
+exports.getAllDevicesWithUserInfo = async () => {
+  try {
+    const snapshot = await devicesRef.get();
+    const data = snapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {deviceID: data.deviceID, user: data.user};
+    });
+    for (let index = 0; index < data.length; index++) {
+      const device = data[index];
+      const userId = device.user;
+      if (userId !== '') {
+        const doc = await usersRef.doc(userId).get();
+        const userInfo = doc.data();
+        device.user = {
+          name: capitalize(`${userInfo.name} ${userInfo.lastName}`),
+          email: userInfo.email,
+          photo: userInfo.photo,
+        };
+      } else {
+        device.user = null;
+      }
+    }
+    return data;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+exports.getUserByDevice = async (id) => {
+  try {
+    const snapshot = await devicesRef.doc(id).get();
+    const device = snapshot.data();
+    const userId = device.user;
+    const doc = await usersRef.where('googleID', '==', userId).get();
+    if (doc.empty) {
+      console.log('[User-API][Firestore][getUserByDevice] No user found');
+      return null;
+    } else {
+      let user;
+      doc.forEach((doc) => {
+        user = doc.data();
+      });
+      return {
+        name: capitalize(`${user.name} ${user.lastName}`),
+        email: user.email,
+        photo: user.photo,
+      };
+    }
+  } catch (error) {
+    throw new Error(error);
+  }
+};
