@@ -6,6 +6,7 @@ const db = new Firestore({
 });
 
 const devicesRef = db.collection('devices');
+const usersRef = db.collection('users');
 
 exports.addDevice = async (device) => {
   try {
@@ -32,5 +33,36 @@ exports.setUserToDevice = async (deviceId, userId) => {
       error,
     );
     throw new Error(error);
+  }
+};
+
+exports.getUser = async (googleID) => {
+  try {
+    const snapshot = await usersRef.where('googleID', '==', googleID).get();
+    if (snapshot.empty) {
+      console.log('[Gateway-API][Firestore][getUser] No matching documents');
+      return null;
+    } else {
+      let userId, user;
+      snapshot.forEach((doc) => {
+        userId = doc.id;
+        user = doc.data();
+      });
+      return {userId, user};
+    }
+  } catch (error) {
+    console.log('[Firestore Service][getUser]', error);
+    return null;
+  }
+};
+
+exports.getDevices = async (userID) => {
+  try {
+    const snapshot = await devicesRef.where('user', '==', userID).get();
+    const devices = snapshot.docs.map((doc) => doc.data()); // Not tested yet
+    return devices;
+  } catch (error) {
+    console.log('[Firestore Service][getDevices]', error);
+    return null;
   }
 };

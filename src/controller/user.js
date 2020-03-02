@@ -2,7 +2,7 @@ const _ = require('lodash');
 
 const {users, Devices} = require('../services/mongoDB');
 
-const {addDevice, setUserToDevice} = require('../services/firestore');
+const {addDevice, setUserToDevice, getUser, getDevices} = require('../services/firestore');
 
 /**
  * Returns the current authenticated user.
@@ -21,8 +21,7 @@ exports.currentUser = async (req, res) => {
   } else {
     try {
       // Search in the DB for the user.
-      const existingUser = await users.findOne({googleID});
-      const userInfo = _.pick(existingUser, ['name', 'lastName', 'email', 'photo']);
+      const {user: userInfo} = await getUser(googleID);
 
       console.log('[User-API][currentUser][Response]', userInfo);
       res.status(200).send({currentUser: userInfo});
@@ -52,12 +51,9 @@ exports.getDevices = async (req, res) => {
   } else {
     try {
       // Search in the DB for the user.
-      const existingUser = await users.findOne({googleID});
-      const userInfo = _.pick(existingUser, ['_id']);
-      const devices = await Devices.find(
-        {_user: userInfo._id},
-        'deviceId duty state alias timerOn timerOff timerState',
-      );
+      const {userId} = await getUser(googleID);
+      // Search in the DB for the devices.
+      const devices = await getDevices(userId);
 
       console.log('[User-API][getDevices][Response]', devices);
       res.status(200).send({userDevices: devices});
