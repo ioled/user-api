@@ -75,16 +75,18 @@ exports.getDevices = async (req, res) => {
  */
 exports.saveDevice = async (req, res) => {
   console.log('[User-API][saveDevice][Request]', req.params, req.body);
-  const {userID, deviceID} = req.body;
+  const {duty, state, timerOn, timerOff, timerState, userID, deviceID, week, power} = req.body;
 
   const device = {
-    duty: 1,
-    state: true,
-    timerOn: '10:00',
-    timerOff: '22:00',
-    timerState: false,
-    userID, // Google ID
+    duty,
+    state,
+    timerOn,
+    timerOff,
+    timerState,
+    userID,
     deviceID,
+    week,
+    power,
   };
 
   try {
