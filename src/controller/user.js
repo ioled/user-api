@@ -70,12 +70,12 @@ exports.getDevices = async (req, res) => {
 /**
  * Save a new device in the firestore database
  * @description Save new device in the database
- * @param {{body: {userID: string, deviceID: string}}} req Request.
+ * @param {{body: {user: string, deviceID: string}}} req Request.
  * @param {object} res Response.
  */
 exports.saveDevice = async (req, res) => {
   console.log('[User-API][saveDevice][Request]', req.params, req.body);
-  const {duty, state, timerOn, timerOff, timerState, userID, deviceID, week, power} = req.body;
+  const {duty, state, timerOn, timerOff, timerState, user, deviceID, week, power} = req.body;
 
   const device = {
     duty,
@@ -83,7 +83,7 @@ exports.saveDevice = async (req, res) => {
     timerOn,
     timerOff,
     timerState,
-    userID,
+    user,
     deviceID,
     week,
     power,
