@@ -13,7 +13,7 @@ exports.addDevice = async (device) => {
   try {
     const ref = await devicesRef.add(device);
 
-    console.log('[Firestore Service] [Save Device] New Device Added:', ref);
+    console.log('[Firestore Service] [Save Device] New Device Added:', ref.id);
     return ref;
   } catch (error) {
     console.log('[Firestore Service] [Save Device] [Error] There was an error saving the new device', error);

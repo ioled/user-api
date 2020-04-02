@@ -1,5 +1,3 @@
-const _ = require('lodash');
-
 const {
   addDevice,
   setUserToDevice,
@@ -10,9 +8,10 @@ const {
 } = require('../services/firestore');
 
 /**
+ * @CristianValdivia
  * Returns the current authenticated user.
- * @param {{user: object}} req Request. Passport.js sets req.user object.
- * @param {object} res Respose.
+ * @param {{user: object}} req googleID
+ * @param {object} res Response.
  */
 exports.currentUser = async (req, res) => {
   console.log('[User-API][currentUser][Request]', req.params, req.body);
@@ -41,7 +40,7 @@ exports.currentUser = async (req, res) => {
  * @CristianValdivia
  * List all the registered devices for the current user.
  * @description List the devices registered in the user database.
- * @param {{user: {id: string}}} req Request.
+ * @param {{user: object}} req googleID
  * @param {object} res Response.
  */
 exports.getDevices = async (req, res) => {
@@ -68,30 +67,32 @@ exports.getDevices = async (req, res) => {
 };
 
 /**
- * Save a new device in the firestore database
+ * @DiegoSepulveda
+ * Save a new device in the firestore database with default config
  * @description Save new device in the database
  * @param {{body: {user: string, deviceID: string}}} req Request.
  * @param {object} res Response.
  */
 exports.saveDevice = async (req, res) => {
   console.log('[User-API][saveDevice][Request]', req.params, req.body);
-  const {duty, state, timerOn, timerOff, timerState, user, deviceID, week, power} = req.body;
+  const {user, deviceID, power} = req.body;
 
   const device = {
-    duty,
-    state,
-    timerOn,
-    timerOff,
-    timerState,
+    alias: deviceID,
+    duty: 1,
+    state: true,
+    timerOn: '00:00',
+    timerOff: '00:00',
+    timerState: false,
     user,
     deviceID,
-    week,
+    week: 1,
     power,
   };
 
   try {
     const ref = await addDevice(device);
-    console.log('[User-API][saveDevice][Response]', ref.id);
+    console.log('[User-API][saveDevice][Response]', {newDevice: deviceID});
     res.status(200).send({newDevice: ref.id});
   } catch (error) {
     console.log('[User-API][saveDevice][Error]', error);
@@ -120,8 +121,9 @@ exports.linkUserToDevice = async (req, res) => {
 };
 
 /**
+ * @DiegoSepulveda
  * List all the devices
- * @description List the devices registered in IoT Core registry: ioled-devices.
+ * @description List the devices registered in Firestore database
  * @returns {object} HTTP status code - 200, 500.
  * @example Response example:
  * {
