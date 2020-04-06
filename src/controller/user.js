@@ -5,6 +5,7 @@ const {
   getDevices,
   getAllDevicesWithUserInfo,
   getUserByDevice,
+  updateDevice,
 } = require('../services/firestore');
 
 /**
@@ -174,6 +175,44 @@ exports.getUserByDevice = async (req, res) => {
     res.status(200).json({data: user});
   } catch (error) {
     console.log('[User-API][getUserByDevice (' + id + ')][Error] ', error);
+    return res.status(500).json({error});
+  }
+};
+
+/**
+ * Update the configuration of a registered device.
+ * @description Update the configuration in Firestore database
+ * @param {String} id - ID of the device listed in IoT Core
+ * @example Request example:
+ * {
+ *	"device": {
+ *		"deviceId": "esp8266_16CB39",
+ *		"config": {
+ *			"alias": casa
+ *		}
+ *	}
+ * }
+ */
+exports.updateDeviceConfig = async (req, res) => {
+  // Get the deviceId and config from the request body.
+  const {device} = req.body;
+  const id = device.deviceId;
+  const {config} = device;
+  console.log('[User API][updateDeviceConfig (' + id + ')][Request] ', req.params);
+
+  if (config === undefined) {
+    console.log('[Device Control API][updateDeviceConfig (' + id + ')][Error]: Config Undefined');
+    return res.status(500);
+  }
+  try {
+    await updateDevice(id, config);
+    console.log('[User API][updateDeviceConfig (' + id + ')][Response] ', {
+      message: 'Config updated',
+    });
+    return res.status(200).send({device});
+  } catch (error) {
+    console.log('[User][updateDeviceConfig (' + id + ')][Error] ', error);
+    // Send the error
     return res.status(500).json({error});
   }
 };

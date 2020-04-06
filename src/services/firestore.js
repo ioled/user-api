@@ -133,3 +133,28 @@ exports.getUserByDevice = async (id) => {
     throw new Error(error);
   }
 };
+
+/**
+ * @CristianValdivia
+ * Update the config of device
+ * @description Update config of device in Firestore
+ * @param  {object} req Request
+ * @param  {object} res Response
+ * @param  {Function} next Callback function
+ */
+exports.updateDevice = async (id, config) => {
+  try {
+    await devicesRef
+      .where('deviceID', '==', id)
+      .get()
+      .then(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+          devicesRef.doc(doc.id).update(config);
+        });
+      });
+    console.log('[Firestore Service] [updateDevice] Update config:', config);
+  } catch (error) {
+    console.log('[Firestore Service] [updateDevice] [Error] There was an error update config', error);
+    throw new Error(error);
+  }
+};
