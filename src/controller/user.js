@@ -195,9 +195,9 @@ exports.getUserByDevice = async (req, res) => {
  */
 exports.updateDeviceConfig = async (req, res) => {
   // Get the deviceId and config from the request body.
-  const {device} = req.body;
-  const id = device.deviceId;
-  const {config} = device;
+  const id = req.body.deviceId;
+  const config = req.body.config;
+
   console.log('[User API][updateDeviceConfig (' + id + ')][Request] ', req.params);
 
   if (config === undefined) {
@@ -209,7 +209,7 @@ exports.updateDeviceConfig = async (req, res) => {
     console.log('[User API][updateDeviceConfig (' + id + ')][Response] ', {
       message: 'Config updated',
     });
-    return res.status(200).send({device});
+    return res.status(200).send({data: config});
   } catch (error) {
     console.log('[User][updateDeviceConfig (' + id + ')][Error] ', error);
     // Send the error
