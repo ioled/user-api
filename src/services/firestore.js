@@ -13,10 +13,10 @@ exports.addDevice = async (device) => {
   try {
     const ref = await devicesRef.add(device);
 
-    console.log('[Firestore Service] [Save Device] New Device Added:', ref.id);
+    console.log('[User-API][Firestore][Save Device] New Device Added:', ref.id);
     return ref;
   } catch (error) {
-    console.log('[Firestore Service] [Save Device] [Error] There was an error saving the new device', error);
+    console.log('[User-API][Firestore][Save Device][Error] There was an error saving the new device', error);
     throw new Error(error);
   }
 };
@@ -26,11 +26,11 @@ exports.setUserToDevice = async (deviceId, userId) => {
     const deviceRef = devicesRef.doc(deviceId);
     const updatedDevice = await deviceRef.update({user: userId});
 
-    console.log('[Firestore Service] [Set User to Device] New Device Linked:', updatedDevice);
+    console.log('[User-API][Firestore] [Set User to Device] New Device Linked:', updatedDevice);
     return 'OK';
   } catch (error) {
     console.log(
-      '[Firestore Service] [Set User to Device] [Error] There was an error setting the user to the device',
+      '[User-API][Firestore][Set User to Device][Error] There was an error setting the user to the device',
       error,
     );
     throw new Error(error);
@@ -41,7 +41,7 @@ exports.getUser = async (googleID) => {
   try {
     const snapshot = await usersRef.where('googleID', '==', googleID).get();
     if (snapshot.empty) {
-      console.log('[Gateway-API][Firestore][getUser] No matching documents');
+      console.log('[User-API][Firestore][getUser] No matching documents');
       return null;
     } else {
       let userId, user;
@@ -52,7 +52,7 @@ exports.getUser = async (googleID) => {
       return {userId, user};
     }
   } catch (error) {
-    console.log('[Firestore Service][getUser]', error);
+    console.log('[User-API][Firestore][getUser]', error);
     return null;
   }
 };
@@ -63,7 +63,7 @@ exports.getDevices = async (userID) => {
     const devices = snapshot.docs.map((doc) => doc.data()); // Not tested yet
     return devices;
   } catch (error) {
-    console.log('[Firestore Service][getDevices]', error);
+    console.log('[User-API][Firestore][getDevices]', error);
     return null;
   }
 };
@@ -78,6 +78,7 @@ exports.getAllDevicesWithUserInfo = async () => {
     for (let index = 0; index < data.length; index++) {
       const device = data[index];
       const userId = device.user;
+
       if (userId !== '') {
         const doc = await usersRef.where('googleID', '==', userId).get();
         if (doc.empty) {
@@ -152,9 +153,9 @@ exports.updateDevice = async (id, config) => {
           devicesRef.doc(doc.id).update(config);
         });
       });
-    console.log('[Firestore Service] [updateDevice] Update config:', config);
+    console.log('[User-API][Firestore][updateDevice] Update config:', config);
   } catch (error) {
-    console.log('[Firestore Service] [updateDevice] [Error] There was an error update config', error);
+    console.log('[User-API][Firestore][updateDevice] [Error] There was an error update config', error);
     throw new Error(error);
   }
 };
