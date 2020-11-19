@@ -24,11 +24,11 @@ docker-compose co:
 
 deploy d:
 	@echo "[PROD][Cloud Function Deployment] Deploying Function"
-	@gcloud functions deploy userApi --set-env-vars PROJECT_ID=$(PROJECT_ID) --runtime nodejs8 --trigger-http --entry-point userApi
+	@gcloud functions deploy userApi --set-env-vars PROJECT_ID=$(PROJECT_ID) --runtime nodejs10 --trigger-http --entry-point userApi
 
 deploy-dev dev:
 	@echo "[DEV][Cloud Function Deployment] Deploying Function"
-	@gcloud functions deploy dev-userApi --set-env-vars PROJECT_ID=$(PROJECT_ID) --runtime nodejs8 --trigger-http --entry-point userApi
+	@gcloud functions deploy dev-userApi --set-env-vars PROJECT_ID=$(PROJECT_ID) --runtime nodejs10 --trigger-http --entry-point userApi
 
 run r:
 	@echo "[Running] Running service"
